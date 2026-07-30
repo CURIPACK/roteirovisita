@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Roteiro de Visitas</title>
+<meta name="description" content="Busca leads e monta o roteiro de visitas mais eficiente.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2f5d4f">
+
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roteiro">
+<meta name="mobile-web-app-capable" content="yes">
+
 <style>
   :root{
     --bg:#faf9f6; --card:#ffffff; --ink:#1f2320; --ink-2:#5c6058; --ink-3:#8b8f86;
@@ -65,6 +83,8 @@
   .attrib{font-size:10.5px;color:var(--ink-3);text-align:center;margin-top:18px;line-height:1.6;}
   .attrib a{color:var(--ink-3);}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <h1>Roteiro de visitas</h1>
@@ -427,3 +447,14 @@ document.getElementById('openMapsBtn').addEventListener('click', () => {
   window.open(url, '_blank');
 });
 </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // registration failed silently; app still works online
+    });
+  });
+}
+</script>
+</body>
+</html>
