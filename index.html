@@ -1,0 +1,429 @@
+<style>
+  :root{
+    --bg:#faf9f6; --card:#ffffff; --ink:#1f2320; --ink-2:#5c6058; --ink-3:#8b8f86;
+    --line:#e3e1d8; --accent:#2f5d4f; --accent-ink:#eef4f1; --warn:#b3541e; --warn-ink:#fbeee4;
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#15170f; --card:#1d201a; --ink:#eeeee6; --ink-2:#b7b8ac; --ink-3:#82857a;
+      --line:#33362b; --accent:#7fb89f; --accent-ink:#1c2c25; --warn:#e08a4c; --warn-ink:#3a2417;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px 40px;}
+  h1{font-size:20px;font-weight:600;margin:4px 0 2px;}
+  .sub{color:var(--ink-2);font-size:13px;margin:0 0 4px;}
+  .free-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    color:var(--accent);background:var(--accent-ink);padding:3px 9px;border-radius:99px;margin-bottom:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .card h2{font-size:14px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .step-badge{width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+  label{display:block;font-size:12px;color:var(--ink-2);margin:10px 0 4px;}
+  label:first-child{margin-top:0;}
+  input[type=text],input[type=number],select{
+    width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:8px;
+    background:var(--bg);color:var(--ink);font-size:14px;
+  }
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .row{display:flex;gap:10px;}
+  .row > *{flex:1;}
+  button{
+    border:none;border-radius:8px;padding:11px 16px;font-size:14px;font-weight:600;
+    cursor:pointer;background:var(--accent);color:var(--accent-ink);width:100%;margin-top:12px;
+  }
+  button.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);font-weight:500;}
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+  .hint{font-size:11.5px;color:var(--ink-3);margin-top:6px;line-height:1.5;}
+  .msg{font-size:13px;padding:9px 11px;border-radius:8px;margin-top:10px;}
+  .msg.error{background:var(--warn-ink);color:var(--warn);}
+  .msg.ok{background:var(--accent-ink);color:var(--accent);}
+  .lead{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);}
+  .lead:first-child{border-top:none;}
+  .lead input[type=checkbox]{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex-shrink:0;}
+  .lead-name{font-size:14px;font-weight:600;}
+  .lead-addr{font-size:12.5px;color:var(--ink-2);margin-top:1px;}
+  .count-pill{font-size:12px;color:var(--ink-2);font-weight:500;}
+  .stop{display:flex;gap:10px;padding:11px 0;border-top:1px solid var(--line);align-items:flex-start;}
+  .stop:first-child{border-top:none;}
+  .stop-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .stop-info{flex:1;}
+  .stop-name{font-size:14px;font-weight:600;}
+  .stop-addr{font-size:12.5px;color:var(--ink-2);}
+  .visited-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-3);margin-top:4px;cursor:pointer;user-select:none;}
+  .visited-toggle input{accent-color:var(--accent);width:13px;height:13px;}
+  .stop.done .stop-name,.stop.done .stop-addr{text-decoration:line-through;color:var(--ink-3);}
+  .summary{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);
+    background:var(--accent-ink);border-radius:8px;padding:10px 12px;margin-bottom:6px;}
+  .summary b{color:var(--accent);}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--accent-ink);
+    border-top-color:var(--accent-ink);border-radius:50%;margin-right:6px;vertical-align:-2px;
+    animation:sp .7s linear infinite;opacity:0.6;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .attrib{font-size:10.5px;color:var(--ink-3);text-align:center;margin-top:18px;line-height:1.6;}
+  .attrib a{color:var(--ink-3);}
+</style>
+
+<div class="wrap">
+  <h1>Roteiro de visitas</h1>
+  <p class="sub">Busca leads e monta a ordem de visita mais eficiente.</p>
+  <span class="free-pill">100% grátis · sem chave de API · sem cadastro</span>
+
+  <div class="card">
+    <h2><span class="step-badge">1</span>Buscar leads</h2>
+    <label for="categoria">Tipo de negócio</label>
+    <select id="categoria">
+      <option value="amenity=cafe">Cafeteria</option>
+      <option value="amenity=restaurant">Restaurante</option>
+      <option value="shop=bakery">Padaria</option>
+      <option value="amenity=pharmacy">Farmácia</option>
+      <option value="shop=supermarket">Mercado / supermercado</option>
+      <option value="shop=convenience">Loja de conveniência</option>
+      <option value="shop=hairdresser">Salão de beleza / barbearia</option>
+      <option value="shop=clothes">Loja de roupas</option>
+      <option value="shop=pet">Pet shop</option>
+      <option value="leisure=fitness_centre">Academia</option>
+      <option value="shop=car_repair">Oficina mecânica</option>
+      <option value="shop=books">Livraria</option>
+      <option value="office=estate_agent">Imobiliária</option>
+      <option value="custom">Personalizado (tag do OpenStreetMap)</option>
+    </select>
+    <div id="customTagRow" style="display:none;">
+      <div class="row">
+        <div>
+          <label for="customKey">Chave (ex: shop)</label>
+          <input type="text" id="customKey" placeholder="shop">
+        </div>
+        <div>
+          <label for="customVal">Valor (ex: bicycle)</label>
+          <input type="text" id="customVal" placeholder="bicycle">
+        </div>
+      </div>
+      <div class="hint">Consulte a lista de tags em <a href="https://wiki.openstreetmap.org/wiki/Map_features" target="_blank">wiki.openstreetmap.org/wiki/Map_features</a>.</div>
+    </div>
+    <label for="local">Bairro / região</label>
+    <input type="text" id="local" placeholder="Batel, Curitiba">
+    <label for="raio">Raio de busca (metros)</label>
+    <input type="number" id="raio" value="1500" min="200" max="5000" step="100">
+    <button id="searchBtn" type="button">Buscar leads</button>
+    <div id="searchMsg"></div>
+  </div>
+
+  <div class="card" id="leadsCard" style="display:none;">
+    <h2><span class="step-badge">2</span>Escolher paradas <span class="count-pill" id="countPill" style="margin-left:auto;"></span></h2>
+    <div id="leadsList"></div>
+  </div>
+
+  <div class="card" id="routeConfigCard" style="display:none;">
+    <h2><span class="step-badge">3</span>Ponto de partida</h2>
+    <button class="secondary" id="useLocationBtn" type="button">Usar minha localização atual</button>
+    <div class="row">
+      <div>
+        <label for="startLat">Latitude</label>
+        <input type="text" id="startLat" placeholder="-25.4284">
+      </div>
+      <div>
+        <label for="startLng">Longitude</label>
+        <input type="text" id="startLng" placeholder="-49.2733">
+      </div>
+    </div>
+    <div class="hint">Pode digitar manualmente (ex: endereço do escritório) em vez de usar o GPS.</div>
+    <button id="optimizeBtn" type="button">Otimizar rota</button>
+    <div id="routeMsg"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h2><span class="step-badge">✓</span>Roteiro otimizado</h2>
+    <div class="summary">
+      <span>Distância total: <b id="sumDist">–</b></span>
+      <span>Tempo estimado: <b id="sumTime">–</b></span>
+    </div>
+    <div id="stopsList"></div>
+    <button id="openMapsBtn" type="button">Abrir no Google Maps</button>
+  </div>
+
+  <p class="attrib">
+    Dados de lugares: © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> ·
+    Busca: Overpass API · Geocodificação: Nominatim · Rotas: OSRM (projetos open source)
+  </p>
+</div>
+
+<script>
+const S = { leads: [], route: null };
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function showMsg(elId, text, type){
+  const el = document.getElementById(elId);
+  el.innerHTML = text ? `<div class="msg ${type}">${text}</div>` : '';
+}
+
+document.getElementById('categoria').addEventListener('change', (e) => {
+  document.getElementById('customTagRow').style.display = e.target.value === 'custom' ? '' : 'none';
+});
+
+document.getElementById('searchBtn').addEventListener('click', searchLeads);
+
+async function searchLeads(){
+  const local = document.getElementById('local').value.trim();
+  const raio = parseInt(document.getElementById('raio').value) || 1500;
+  const catSelect = document.getElementById('categoria').value;
+  showMsg('searchMsg','','');
+
+  if(!local){ showMsg('searchMsg','Digite o bairro ou região.','error'); return; }
+
+  let key, val;
+  if(catSelect === 'custom'){
+    key = document.getElementById('customKey').value.trim();
+    val = document.getElementById('customVal').value.trim();
+    if(!key || !val){ showMsg('searchMsg','Preencha a chave e o valor da tag.','error'); return; }
+  }else{
+    [key, val] = catSelect.split('=');
+  }
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Localizando o bairro...';
+
+  try{
+    // Step 1: geocode the neighborhood with Nominatim
+    let geoData;
+    try{
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(local)}&format=json&limit=1`);
+      if(!geoRes.ok){ throw new Error('resposta ' + geoRes.status); }
+      geoData = await geoRes.json();
+    }catch(err){
+      throw new Error('Falha ao conectar com o Nominatim (geocodificação). Isso costuma ser bloqueio de rede/extensão, não um bug do app. Detalhe: ' + err.message);
+    }
+    if(!geoData || geoData.length === 0){
+      throw new Error('Não encontrei esse local. Tente ser mais específico, ex: "Batel, Curitiba".');
+    }
+    const centerLat = parseFloat(geoData[0].lat);
+    const centerLon = parseFloat(geoData[0].lon);
+
+    btn.innerHTML = '<span class="spin"></span>Buscando estabelecimentos...';
+
+    // Step 2: search nearby places with Overpass API (tries multiple independent mirrors)
+    const query = `[out:json][timeout:25];(node["${key}"="${val}"](around:${raio},${centerLat},${centerLon});way["${key}"="${val}"](around:${raio},${centerLat},${centerLon}););out center;`;
+    const mirrors = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.ru/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter'
+    ];
+    let overpassData = null;
+    let lastErr = null;
+    for(const mirror of mirrors){
+      try{
+        const overpassRes = await fetch(mirror, {
+          method: 'POST',
+          body: 'data=' + encodeURIComponent(query)
+        });
+        if(!overpassRes.ok){ throw new Error('resposta ' + overpassRes.status); }
+        overpassData = await overpassRes.json();
+        break; // success, stop trying mirrors
+      }catch(err){
+        lastErr = err;
+        continue; // try next mirror
+      }
+    }
+    if(!overpassData){
+      throw new Error('Não consegui conectar com nenhum servidor do Overpass API (testei ' + mirrors.length + '). Isso indica bloqueio de rede/firewall para esse tipo de serviço, não um bug do app. Detalhe: ' + (lastErr ? lastErr.message : ''));
+    }
+
+    const elements = overpassData.elements || [];
+    if(elements.length === 0){
+      showMsg('searchMsg','Nenhum resultado encontrado nesse raio. Tente aumentar o raio de busca.','error');
+      document.getElementById('leadsCard').style.display = 'none';
+      return;
+    }
+
+    S.leads = elements.map(el => {
+      const lat = el.type === 'node' ? el.lat : (el.center ? el.center.lat : null);
+      const lng = el.type === 'node' ? el.lon : (el.center ? el.center.lon : null);
+      const t = el.tags || {};
+      const addrParts = [t['addr:street'], t['addr:housenumber']].filter(Boolean).join(', ');
+      return {
+        id: 'osm-' + el.type + '-' + el.id,
+        name: t.name || 'Sem nome cadastrado',
+        address: addrParts || (t['addr:suburb'] || ''),
+        lat, lng,
+        selected: true,
+      };
+    }).filter(l => l.lat && l.lng);
+
+    if(S.leads.length === 0){
+      showMsg('searchMsg','Encontrei resultados, mas sem coordenadas utilizáveis. Tente outro bairro.','error');
+      return;
+    }
+
+    renderLeads();
+    document.getElementById('leadsCard').style.display = '';
+    document.getElementById('routeConfigCard').style.display = '';
+    showMsg('searchMsg', `${S.leads.length} lead(s) encontrado(s).`, 'ok');
+  }catch(e){
+    showMsg('searchMsg', 'Erro: ' + e.message, 'error');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Buscar leads';
+  }
+}
+
+function renderLeads(){
+  const list = document.getElementById('leadsList');
+  list.innerHTML = S.leads.map((l, i) => `
+    <div class="lead">
+      <input type="checkbox" data-idx="${i}" ${l.selected ? 'checked' : ''} class="lead-check">
+      <div>
+        <div class="lead-name">${l.name}</div>
+        <div class="lead-addr">${l.address || 'endereço não cadastrado'}</div>
+      </div>
+    </div>
+  `).join('');
+  list.querySelectorAll('.lead-check').forEach(cb => {
+    cb.addEventListener('change', (e) => {
+      S.leads[+e.target.dataset.idx].selected = e.target.checked;
+      updateCount();
+    });
+  });
+  updateCount();
+}
+
+function updateCount(){
+  const n = S.leads.filter(l => l.selected).length;
+  document.getElementById('countPill').textContent = `${n} selecionado(s)`;
+}
+
+document.getElementById('useLocationBtn').addEventListener('click', () => {
+  if(!navigator.geolocation){
+    showMsg('routeMsg','Geolocalização não disponível neste navegador.','error');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById('startLat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('startLng').value = pos.coords.longitude.toFixed(6);
+    },
+    () => showMsg('routeMsg','Não consegui obter sua localização. Digite manualmente.','error')
+  );
+});
+
+document.getElementById('optimizeBtn').addEventListener('click', optimizeRoute);
+
+async function optimizeRoute(){
+  const lat = parseFloat(document.getElementById('startLat').value);
+  const lng = parseFloat(document.getElementById('startLng').value);
+  showMsg('routeMsg','','');
+
+  if(isNaN(lat) || isNaN(lng)){ showMsg('routeMsg','Informe o ponto de partida (ou use sua localização).','error'); return; }
+
+  const selected = S.leads.filter(l => l.selected);
+  if(selected.length < 2){ showMsg('routeMsg','Selecione pelo menos 2 paradas.','error'); return; }
+  if(selected.length > 40){ showMsg('routeMsg','Máximo de 40 paradas por rota nesta versão.','error'); return; }
+
+  const btn = document.getElementById('optimizeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Otimizando...';
+
+  try{
+    const points = [{ lat, lng }, ...selected];
+    const coordsStr = points.map(p => `${p.lng},${p.lat}`).join(';');
+
+    let data;
+    try{
+      const res = await fetch(`https://router.project-osrm.org/trip/v1/driving/${coordsStr}?source=first&roundtrip=true&overview=false`);
+      if(!res.ok){ throw new Error('resposta ' + res.status); }
+      data = await res.json();
+    }catch(err){
+      throw new Error('Falha ao conectar com o OSRM (otimização de rota). Isso costuma ser bloqueio de rede/extensão, não um bug do app. Detalhe: ' + err.message);
+    }
+    if(data.code !== 'Ok'){
+      throw new Error('Não consegui calcular a rota. Verifique se os pontos de partida e as paradas fazem sentido.');
+    }
+
+    const trip = data.trips[0];
+    const ordered = data.waypoints
+      .map((w, i) => ({ waypoint_index: w.waypoint_index, originalIndex: i }))
+      .filter(w => w.originalIndex !== 0)
+      .sort((a, b) => a.waypoint_index - b.waypoint_index)
+      .map(w => points[w.originalIndex]);
+
+    S.route = {
+      start: { lat, lng },
+      stops: ordered,
+      distanceMeters: trip.distance,
+      durationSec: trip.duration,
+    };
+
+    renderRoute();
+    document.getElementById('resultCard').style.display = '';
+    showMsg('routeMsg','Rota otimizada com sucesso.','ok');
+  }catch(e){
+    showMsg('routeMsg', 'Erro: ' + e.message, 'error');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Otimizar rota';
+  }
+}
+
+function getVisited(key){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+
+function setVisited(key, obj){
+  try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){ /* storage unavailable, ignore */ }
+}
+
+function renderRoute(){
+  const km = (S.route.distanceMeters / 1000).toFixed(1);
+  const mins = Math.round(S.route.durationSec / 60);
+  const hrs = Math.floor(mins / 60);
+  const remMin = mins % 60;
+  document.getElementById('sumDist').textContent = `${km} km`;
+  document.getElementById('sumTime').textContent = hrs > 0 ? `${hrs}h${String(remMin).padStart(2,'0')}` : `${mins} min`;
+
+  const key = 'visited:' + todayKey();
+  const visited = getVisited(key);
+
+  const list = document.getElementById('stopsList');
+  list.innerHTML = S.route.stops.map((s, i) => `
+    <div class="stop ${visited[s.id] ? 'done' : ''}" data-id="${s.id}">
+      <div class="stop-num">${i + 1}</div>
+      <div class="stop-info">
+        <div class="stop-name">${s.name}</div>
+        <div class="stop-addr">${s.address || ''}</div>
+        <label class="visited-toggle">
+          <input type="checkbox" class="visited-check" data-id="${s.id}" ${visited[s.id] ? 'checked' : ''}>
+          visitado
+        </label>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.visited-check').forEach(cb => {
+    cb.addEventListener('change', (e) => {
+      const id = e.target.dataset.id;
+      const v = getVisited(key);
+      v[id] = e.target.checked;
+      setVisited(key, v);
+      e.target.closest('.stop').classList.toggle('done', e.target.checked);
+    });
+  });
+}
+
+document.getElementById('openMapsBtn').addEventListener('click', () => {
+  if(!S.route) return;
+  const origin = `${S.route.start.lat},${S.route.start.lng}`;
+  const waypoints = S.route.stops.map(s => `${s.lat},${s.lng}`).join('|');
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${origin}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`;
+  window.open(url, '_blank');
+});
+</script>
